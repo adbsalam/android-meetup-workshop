@@ -1,0 +1,54 @@
+# built application files
+*.apk
+*.ap_
+
+crashlytics.properties
+assets/crashlytics-build.properties
+.idea/dictionaries
+.idea/inspectionProfiles
+.idea/workspace.xml
+.idea/copyright
+.idea/libraries
+.idea/codeStyles
+.idea/caches
+
+*.iml
+.idea
+/workspace.xml
+.gradle
+build/
+.navigation
+captures/
+output.json
+unused.txt
+
+# coverage
+*.ec
+*.em
+res/values/com_crashlytics_export_strings.xml
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+.gradle/*
+.DS_Store
+out/*
+build/*
+*/gen/*
+gen/*
+local.properties
+tmp
+test-output
+TESTS-TestSuites.xml
+dump.txt
+mapping.txt
+seeds.txt
+usage.txt
+
+.java-version
+
+.kotlin/
+vm-artifacts/

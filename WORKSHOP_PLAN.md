@@ -2,20 +2,21 @@
 
 ## Aim
 
-This workshop uses a two-player memory game to teach shared Compose Multiplatform development for Android and Kotlin/Wasm.
+The app currently exists only in the Android module. This workshop migrates the app to Kotlin Multiplatform (KMP).
+
+The migration adds a shared module, a web app, shared UI, a shared view model, platform-specific implementations, and
+shared tests.
 
 ## Learning outcomes
 
 By the end of the workshop, attendees can:
 
-- Map the `androidApp`, `webApp`, and `shared/src/commonMain` modules.
-- Trace both platform hosts to the shared `App()` composable.
-- Explain the shared ViewModel, immutable UI state, sealed intents, and `StateFlow`.
-- Build platform-agnostic Compose UI with common layouts, state, and safe-content padding.
-- Move Android-only images into Compose Multiplatform resources and use generated accessors.
-- Add a pure Kotlin dependency to `commonMain` and browser support packages to JS and Wasm targets.
-- Run Android and Wasm builds and name the browser requirements for Wasm Garbage Collection.
-- Explain the current beta status of Compose Multiplatform for Web and Kotlin/Wasm.
+- Enable the `shared` and `webApp` modules and run a Hello World Wasm app.
+- Move Compose UI from the Android module into shared code.
+- Move image assets into `composeResources` and use the generated resource accessors.
+- Move the view model into shared code and add the dependencies that it needs.
+- Use `expect` and `actual` for platform-specific BackHandler and time-zone implementations.
+- Move shared behaviour tests into the shared module.
 
 ## Agreed game behaviour
 
@@ -28,78 +29,76 @@ By the end of the workshop, attendees can:
 - The end screen shows the result, scores, local start time, time-zone ID, and elapsed time.
 - Android Back and browser Escape open the same exit dialog during play.
 
-## Branch structure
+## Migration starting point
 
-The parentless workshop root contains the refined game, shared MVI state, and core tests. The starter branch adds Android-only sample images and starter exercises. The solution branch starts from the starter. It adds shared artwork, browser Escape support, time-zone data, and full documentation.
-
-| Branch | Workshop role |
-| --- | --- |
-| `workshop-starter-v2` | Playable game with two Android-only sample images and implementation exercises. |
-| `workshop-solution-v2` | Complete game with ten shared card fronts, one shared back, browser support, and this guide. |
+The app starts in the Android module. The workshop adds the `shared` and `webApp` modules and moves code into shared
+source sets one step at a time.
 
 ## Workshop sequence
 
-### 1. Read the project structure
+### 1. Enable the shared module and web app
 
-1. Find `MainActivity.kt` and the browser `main.kt`.
-2. Trace each entry point to `App()` in `shared/src/commonMain`.
-3. Identify the Android and browser host code.
+Set up the project so that it can build a Kotlin/Wasm web app.
 
-Expected result: attendees can explain how two hosts use one shared UI.
+1. Add `shared` and `webApp` to `settings.gradle.kts`.
+2. Update `shared/build.gradle.kts` for the shared module.
+3. Update `webApp/build.gradle.kts` for the web app.
+4. Create a Hello World Wasm app.
+5. Run the Wasm app in a browser.
 
-### 2. Trace MVI and game rules
+Expected result: the project contains `shared` and `webApp`, and the Hello World Wasm app runs in a browser.
 
-1. Read `MemoryMatchViewModel.kt`.
-2. Follow a card-selection intent into `MemoryMatchGame.selectCard`.
-3. Follow the updated `StateFlow` into the Compose UI.
-4. Read the match rules, score rules, and turn rules.
+### 2. Migrate the UI to the shared module
 
-Expected result: attendees can locate UI state, intent handling, and game logic.
+Move the Compose UI from the Android module into shared code.
 
-### 3. Review common Compose APIs
+1. Move the UI into the shared module.
+2. Comment out unresolved references.
+3. Compile the app and keep it in a working state.
+4. Move all image assets to `composeResources`.
+5. Update image references to use the generated Compose Multiplatform resources.
 
-1. Read the imports in `App.kt`.
-2. Compare the common source-set dependencies in `shared/build.gradle.kts`.
-3. Identify Android-only APIs that must stay out of `commonMain`.
+Expected result: the UI runs from shared code, and the image assets load on Android and in the web app.
 
-Expected result: attendees use artifact and source-set support, not package prefixes, to judge platform compatibility.
+### 3. Migrate the view model
 
-### 4. Move and load artwork
+Move the view model into the shared module and resolve the errors that appear.
 
-1. On the starter branch, find `kotlin_logo.png` and `gdg_logo.png` under Android resources.
-2. Move the images to `shared/src/commonMain/composeResources/drawable`.
-3. Add the supplied card fronts and `card_back.png`.
-4. Run Gradle sync or a build, then use the generated `Res.drawable.*` accessors.
+1. Move the view model into shared code.
+2. Compile the project.
+3. Read each unresolved reference.
+4. Add the required view model dependencies.
+5. Resolve the remaining errors.
 
-Expected result: the same shared artwork appears on Android and Wasm.
+Expected result: the shared UI uses the shared view model on Android and in the web app.
 
-### 5. Add browser time-zone support
+### 4. Add platform-specific implementations
 
-1. Read the `kotlinx-datetime` entry in `gradle/libs.versions.toml`.
-2. Read its `commonMain` dependency in `shared/build.gradle.kts`.
-3. Compare the JS and Wasm `@JsModule` declarations.
-4. Read the npm dependencies in `webApp/build.gradle.kts`.
-5. Run `./gradlew kotlinUpgradeYarnLock kotlinWasmUpgradeYarnLock`.
-6. Run the browser time-zone tests.
+Use `expect` and `actual` declarations for APIs that differ between platforms.
 
-Expected result: browser time-zone IDs use IANA names instead of `SYSTEM`.
+1. Add a shared `expect` declaration for `BackHandler`.
+2. Add the Android `actual` implementation.
+3. Add the web app `actual` implementation.
+4. Add a shared `expect` declaration for time-zone access.
+5. Add the Android and web app `actual` implementations.
+6. Connect the implementations to the shared UI.
 
-### 6. Compare keyboard behaviour
+Expected result: BackHandler and time-zone access work on each platform.
 
-1. Start a game in the browser.
-2. Press Escape and select `Stay`.
-3. Press Escape again and select `Leave`.
-4. If an Android device or emulator is available, repeat with Android Back.
+### 5. Migrate the tests
 
-Expected result: both hosts use the same game-exit state and dialog.
+Move tests for shared behaviour into the shared module.
 
-### 7. Build and run each target
+1. Move common tests into `shared/src/commonTest`.
+2. Keep platform-specific tests in their platform source sets.
+3. Run the shared tests.
+4. Run the Android tests.
+5. Run the web app tests.
 
-1. Run the shared JS and Wasm tests.
-2. Build the Android debug app.
-3. Run the Wasm browser app in a supported browser.
+Expected result: shared behaviour is tested from the shared module, and platform-specific behaviour remains covered by
+platform tests.
 
-Expected result: shared game logic and both browser targets build without platform-specific Compose imports.
+Raise questions before moving to the next step when a reference, dependency, or platform API is unclear.
 
 ## Key gotchas
 
