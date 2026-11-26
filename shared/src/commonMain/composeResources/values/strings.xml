@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Memory Match</string>
+    <string name="welcome_description">A two-player card-matching game.</string>
+    <string name="start_game">Start a game</string>
+    <string name="how_to_play">How to play</string>
+    <string name="rules_take_turns">Take it in turns to flip cards.</string>
+    <string name="rules_matching_cards">Find two matching cards to score a point and get an extra turn.</string>
+    <string name="rules_most_matches">The player who matches the most wins.</string>
+    <string name="rules_mismatched_cards">If the cards do not match, they turn over and it is the next player's turn.</string>
+    <string name="close">Close</string>
+    <string name="choose_players">Choose your players</string>
+    <string name="player_one">Player 1</string>
+    <string name="player_two">Player 2</string>
+    <string name="start_matching">Start matching</string>
+    <string name="back">Back</string>
+    <string name="player_turn">%1$s's turn</string>
+    <string name="match">Match!</string>
+    <string name="not_a_match">Not a match</string>
+    <string name="score">Score: %1$d</string>
+    <string name="face_down_card">Face-down card</string>
+    <string name="leave_game_title">Leave game?</string>
+    <string name="leave_game_message">Are you sure you want to leave this game?</string>
+    <string name="leave">Leave</string>
+    <string name="stay">Stay</string>
+    <string name="game_over">Game over</string>
+    <string name="player_wins">%1$s wins!</string>
+    <string name="draw">It's a draw!</string>
+    <string name="score_summary">%1$s: %2$d  •  %3$s: %4$d</string>
+    <string name="started_at">Started: %1$s</string>
+    <string name="time_zone">Time zone: %1$s</string>
+    <string name="elapsed">Elapsed: %1$s</string>
+    <string name="play_again">Play again</string>
+    <string name="home">Home</string>
+</resources>

@@ -1,0 +1,10 @@
+package uk.co.androidmcr.memorymatch
+
+import androidx.compose.runtime.Composable
+
+@Composable
+@Suppress("UNUSED_PARAMETER")
+internal actual fun PlatformBackHandler(
+    enabled: Boolean,
+    onBack: () -> Unit,
+) = Unit

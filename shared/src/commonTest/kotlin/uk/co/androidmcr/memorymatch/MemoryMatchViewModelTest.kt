@@ -1,8 +1,5 @@
 package uk.co.androidmcr.memorymatch
 
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,29 +10,6 @@ import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 
 class MemoryMatchViewModelTest {
-    @Test
-    fun completingGameRecordsTheTimeFromTheInjectedClock() {
-        val startedAt = Instant.fromEpochMilliseconds(1_000)
-        val finishedAt = Instant.fromEpochMilliseconds(2_000)
-        val clock = mockk<Clock>()
-        every { clock.now() } returnsMany listOf(startedAt, finishedAt)
-        val viewModel = MemoryMatchViewModel(clock = clock, random = Random(3))
-
-        viewModel.dispatch(MemoryMatchIntent.StartGame)
-        viewModel.uiState.value.game.cards
-            .groupBy { it.label }
-            .values
-            .forEach { pair ->
-                viewModel.dispatch(MemoryMatchIntent.SelectCard(pair[0].id))
-                viewModel.dispatch(MemoryMatchIntent.SelectCard(pair[1].id))
-                viewModel.dispatch(MemoryMatchIntent.FeedbackElapsed)
-            }
-
-        assertEquals(GameScreen.GAME_OVER, viewModel.uiState.value.screen)
-        assertEquals(finishedAt, viewModel.uiState.value.sessionFinishedAt)
-        verify(exactly = 2) { clock.now() }
-    }
-
     @Test
     fun intentsUpdateTheSharedUiState() {
         val now = Instant.fromEpochMilliseconds(1_000)

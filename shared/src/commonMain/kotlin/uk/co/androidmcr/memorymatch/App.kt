@@ -1,6 +1,5 @@
 package uk.co.androidmcr.memorymatch
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -51,7 +50,6 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,6 +58,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import memorymatch.shared.generated.resources.*
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Instant
 
 private val PlayerOneColor = Color(0xFFE7F4DF)
@@ -76,7 +78,7 @@ fun App() {
         val targetBackground = if (uiState.game.activePlayerIndex == 0) PlayerOneColor else PlayerTwoColor
         val backgroundColor by animateColorAsState(targetValue = targetBackground, label = "player-background")
 
-        BackHandler(enabled = uiState.screen == GameScreen.PLAYING) {
+        PlatformBackHandler(enabled = uiState.screen == GameScreen.PLAYING) {
             viewModel.dispatch(MemoryMatchIntent.BackRequested)
         }
 
@@ -149,18 +151,18 @@ fun App() {
                 onDismissRequest = {
                     viewModel.dispatch(MemoryMatchIntent.DismissExitDialog)
                 },
-                title = { Text("Leave game?") },
-                text = { Text("Are you sure you want to leave this game?") },
+                title = { Text(stringResource(Res.string.leave_game_title)) },
+                text = { Text(stringResource(Res.string.leave_game_message)) },
                 confirmButton = {
                     TextButton(onClick = { viewModel.dispatch(MemoryMatchIntent.LeaveGame) }) {
-                        Text("Leave")
+                        Text(stringResource(Res.string.leave))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = {
                         viewModel.dispatch(MemoryMatchIntent.DismissExitDialog)
                     }) {
-                        Text("Stay")
+                        Text(stringResource(Res.string.stay))
                     }
                 },
             )
@@ -177,17 +179,17 @@ private fun WelcomeScreen(onStart: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Memory Match", style = MaterialTheme.typography.headlineLarge)
+        Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.headlineLarge)
         Text(
-            "A two-player card-matching game.",
+            stringResource(Res.string.welcome_description),
             textAlign = TextAlign.Center,
         )
         Button(onClick = onStart) {
-            Text("Start a game")
+            Text(stringResource(Res.string.start_game))
         }
         Box {
             TextButton(onClick = { showRules = true }) {
-                Text("How to play")
+                Text(stringResource(Res.string.how_to_play))
             }
             DropdownMenu(
                 expanded = showRules,
@@ -199,12 +201,12 @@ private fun WelcomeScreen(onStart: () -> Unit) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Text("Take it in turns to flip cards.")
-                    Text("Find two matching cards to score a point and get an extra turn.")
-                    Text("The player who matches the most wins.")
-                    Text("If the cards do not match, they turn over and it is the next player's turn.")
+                    Text(stringResource(Res.string.rules_take_turns))
+                    Text(stringResource(Res.string.rules_matching_cards))
+                    Text(stringResource(Res.string.rules_most_matches))
+                    Text(stringResource(Res.string.rules_mismatched_cards))
                     TextButton(onClick = { showRules = false }) {
-                        Text("Close")
+                        Text(stringResource(Res.string.close))
                     }
                 }
             }
@@ -226,26 +228,26 @@ private fun PlayerSetupScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Choose your players", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(Res.string.choose_players), style = MaterialTheme.typography.headlineMedium)
         OutlinedTextField(
             value = playerOneName,
             onValueChange = onPlayerOneNameChange,
-            label = { Text("Player 1") },
+            label = { Text(stringResource(Res.string.player_one)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
             value = playerTwoName,
             onValueChange = onPlayerTwoNameChange,
-            label = { Text("Player 2") },
+            label = { Text(stringResource(Res.string.player_two)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
         Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) {
-            Text("Start matching")
+            Text(stringResource(Res.string.start_matching))
         }
         TextButton(onClick = onBack) {
-            Text("Back")
+            Text(stringResource(Res.string.back))
         }
     }
 }
@@ -260,7 +262,7 @@ private fun GameScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Memory Match", style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.headlineMedium)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -276,7 +278,7 @@ private fun GameScreenContent(
                 modifier = Modifier.weight(1f),
             )
         }
-        Text("${game.activePlayer.name}'s turn")
+        Text(stringResource(Res.string.player_turn, game.activePlayer.name))
         AdaptiveCardBoard(game = game, onSelectCard = onSelectCard)
         Box(
             modifier = Modifier
@@ -285,8 +287,8 @@ private fun GameScreenContent(
             contentAlignment = Alignment.Center,
         ) {
             when (game.feedback) {
-                CardFeedback.MATCH -> Text("Match!", color = MatchColor)
-                CardFeedback.MISMATCH -> Text("Not a match", color = MismatchColor)
+                CardFeedback.MATCH -> Text(stringResource(Res.string.match), color = MatchColor)
+                CardFeedback.MISMATCH -> Text(stringResource(Res.string.not_a_match), color = MismatchColor)
                 null -> Unit
             }
         }
@@ -311,7 +313,7 @@ private fun PlayerScoreCard(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(player.name, textAlign = TextAlign.Center, maxLines = 1)
-            Text("Score: ${player.score}")
+            Text(stringResource(Res.string.score, player.score))
         }
     }
 }
@@ -365,7 +367,7 @@ private fun MemoryCardView(
     val imageResource = if (isFaceRevealed) {
         cardArtwork(card.label)
     } else {
-        R.drawable.card_back
+        Res.drawable.card_back
     }
     val painter = painterResource(imageResource)
     val rotationY by animateFloatAsState(
@@ -402,7 +404,7 @@ private fun MemoryCardView(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = if (isFaceRevealed) card.label else "Face-down card",
+                text = if (isFaceRevealed) card.label else stringResource(Res.string.face_down_card),
                 modifier = Modifier.graphicsLayer {
                     if (rotationY > 90f) this.rotationY = 180f
                 },
@@ -426,17 +428,17 @@ private fun MemoryCardView(
     }
 }
 
-private fun cardArtwork(label: String): Int = when (label) {
-    "Android MCR" -> R.drawable.android_mcr_logo
-    "Bug" -> R.drawable.bug_logo
-    "Compose Multiplatform" -> R.drawable.cmp_logo
-    "Colour" -> R.drawable.colour_logo
-    "Firebase" -> R.drawable.firebase_logo
-    "GDG" -> R.drawable.gdg_logo
-    "Gradle" -> R.drawable.gradle_logo
-    "Kotlin" -> R.drawable.kotlin_logo
-    "Kotlin Meetup" -> R.drawable.kotlin_meet_logo
-    "Robot" -> R.drawable.robot_logo
+private fun cardArtwork(label: String): DrawableResource = when (label) {
+    "Android MCR" -> Res.drawable.android_mcr_logo
+    "Bug" -> Res.drawable.bug_logo
+    "Compose Multiplatform" -> Res.drawable.cmp_logo
+    "Colour" -> Res.drawable.colour_logo
+    "Firebase" -> Res.drawable.firebase_logo
+    "GDG" -> Res.drawable.gdg_logo
+    "Gradle" -> Res.drawable.gradle_logo
+    "Kotlin" -> Res.drawable.kotlin_logo
+    "Kotlin Meetup" -> Res.drawable.kotlin_meet_logo
+    "Robot" -> Res.drawable.robot_logo
     else -> error("Unknown card label: $label")
 }
 
@@ -452,9 +454,9 @@ private fun GameOverScreen(
     val firstPlayer = game.players[0]
     val secondPlayer = game.players[1]
     val result = when {
-        firstPlayer.score > secondPlayer.score -> "${firstPlayer.name} wins!"
-        secondPlayer.score > firstPlayer.score -> "${secondPlayer.name} wins!"
-        else -> "It's a draw!"
+        firstPlayer.score > secondPlayer.score -> stringResource(Res.string.player_wins, firstPlayer.name)
+        secondPlayer.score > firstPlayer.score -> stringResource(Res.string.player_wins, secondPlayer.name)
+        else -> stringResource(Res.string.draw)
     }
 
     Column(
@@ -462,22 +464,30 @@ private fun GameOverScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text("Game over", style = MaterialTheme.typography.headlineLarge)
+        Text(stringResource(Res.string.game_over), style = MaterialTheme.typography.headlineLarge)
         Text(result, style = MaterialTheme.typography.headlineMedium)
-        Text("${firstPlayer.name}: ${firstPlayer.score}  •  ${secondPlayer.name}: ${secondPlayer.score}")
+        Text(
+            stringResource(
+                Res.string.score_summary,
+                firstPlayer.name,
+                firstPlayer.score,
+                secondPlayer.name,
+                secondPlayer.score,
+            ),
+        )
         if (startedAt != null && timeZone != null) {
-            Text("Started: ${startedAt.toLocalDateTime(timeZone)}")
-            Text("Time zone: ${timeZone.id}")
+            Text(stringResource(Res.string.started_at, startedAt.toLocalDateTime(timeZone)))
+            Text(stringResource(Res.string.time_zone, timeZone.id))
         }
         if (startedAt != null && finishedAt != null) {
-            Text("Elapsed: ${formatElapsedTime(startedAt, finishedAt)}")
+            Text(stringResource(Res.string.elapsed, formatElapsedTime(startedAt, finishedAt)))
         }
         Spacer(Modifier.height(4.dp))
         Button(onClick = onRematch) {
-            Text("Play again")
+            Text(stringResource(Res.string.play_again))
         }
         TextButton(onClick = onHome) {
-            Text("Home")
+            Text(stringResource(Res.string.home))
         }
     }
 }

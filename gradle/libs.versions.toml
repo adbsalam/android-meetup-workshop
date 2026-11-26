@@ -15,7 +15,6 @@ junit = "4.13.2"
 kotlin = "2.4.21"
 kotlin-wrappers = "2026.10.4"
 material3 = "1.12.0-alpha03"
-mockk = "1.14.12"
 kotlinxDatetime = "0.8.0"
 
 [libraries]
@@ -38,7 +37,6 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 wrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version.ref = "kotlin-wrappers" }
 
